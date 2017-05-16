@@ -5,7 +5,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use FOS\RestBundle\Controller\Annotations\Get; // N'oublons pas d'inclure Get
+use FOS\RestBundle\Controller\Annotations as Rest; // alias pour toutes les annotations
 use FOS\RestBundle\View\ViewHandler;
 use FOS\RestBundle\View\View; // Utilisation de la vue de FOSRestBundle
 use AppBundle\Entity\Place;
@@ -14,7 +14,8 @@ class PlaceController extends Controller
 {
 
   /**
-  * @Get("/places")
+  * @Rest\View()
+  * @Rest\Get("/places")
   */
     public function getPlacesAction(Request $request)
     {
@@ -23,20 +24,26 @@ class PlaceController extends Controller
                 ->findAll();
         /* @var $places Place[] */
 
-        $formatted = [];
-        foreach ($places as $place) {
-            $formatted[] = [
-               'id' => $place->getId(),
-               'name' => $place->getName(),
-               'address' => $place->getAddress(),
-            ];
-        }
+        // $formatted = [];
+        // foreach ($places as $place) {
+        //     $formatted[] = [
+        //        'id' => $place->getId(),
+        //        'name' => $place->getName(),
+        //        'address' => $place->getAddress(),
+        //     ];
+        //   }
 
-        return new JsonResponse($formatted);
-    }
+          // Création d'une vue FOSRestBundle
+      $view = View::create($places);
+      $view->setFormat('json');
+
+      return $view;
+
+        }
+        //return new JsonResponse($formatted);
 
     /**
-    * @Get("/places/{id}")
+    * @Rest\Get("/places/{id}")
     */
     public function getPlaceAction(Request $request)
     {
@@ -50,12 +57,9 @@ class PlaceController extends Controller
         return new JsonResponse(['message' => 'Place not found'], Response::HTTP_NOT_FOUND);
        }
 
-        $formatted[] = [
-           'id' => $place->getId(),
-           'name' => $place->getName(),
-           'address' => $place->getAddress(),
-        ];
+       $view = View::create($place);
+       $view->setFormat('json');
 
-        return new JsonResponse($formatted);
+       return $view;
     }
 }
