@@ -1,14 +1,21 @@
 <?php
 namespace AppBundle\Controller;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use FOS\RestBundle\Controller\Annotations\Get;
 use AppBundle\Entity\User;
 
 class UserController extends Controller
 {
+
+  /**
+  * @Get("/users")
+  */
     public function getUsersAction(Request $request)
     {
         $users = $this->get('doctrine.orm.entity_manager')
@@ -28,12 +35,14 @@ class UserController extends Controller
         return new JsonResponse($formatted);
     }
 
-
-public function getUserAction($id, Request $request)
+    /**
+    * @Get("/users/{id}")
+    */
+public function getUserAction(Request $request)
 {
     $user = $this->get('doctrine.orm.entity_manager')
             ->getRepository('AppBundle:User')
-            ->find($id); // L'identifiant est utilisé directement
+            ->find($request->get('id')); // L'identifiant est utilisé directement
                     /* @var $place Place */
                     // ...
                  if (empty($user)) {
